@@ -165,6 +165,42 @@ var rentalModifications = [{
   'pickupDate': '2015-12-05'
 }];
 
+
+
+function getDiffDays(date1, date2)
+{
+   var firstDate = new Date(date1);
+   var secondDate = new Date(date2);
+   
+   return  1 + (secondDate - firstDate) / 86400000;
+}
+
+
+
+function getPrice(rentals, cars)
+{
+  var dayPrice = 0;
+  var distancePrice = 0 ;
+
+  for (var i = 0 ; i< rentals.length ; i++)
+  {
+    for (var j = 0 ; j < cars.length ; j++)
+    {
+      if(cars[j].id == rentals[i].carId)
+      {
+        dayPrice = cars[i].pricePerDay;
+        distancePrice = cars[i].pricePerKm;
+      }
+
+    }
+    var time = getDiffDays(rentals[i].pickupDate, rentals[i].returnDate );
+    rentals[i].price =  time * dayPrice + rentals[i].distance * distancePrice;
+  } 
+}
+
+getPrice(rentals, cars);
+
+
 console.log(cars);
 console.log(rentals);
 console.log(actors);
