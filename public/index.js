@@ -166,7 +166,7 @@ var rentalModifications = [{
 }];
 
 
-
+//function to get the rental time in days
 function getDiffDays(date1, date2)
 {
    var firstDate = new Date(date1);
@@ -176,13 +176,14 @@ function getDiffDays(date1, date2)
 }
 
 
-
+//function to get the price of the rental
 function getPrice(rentals, cars)
 {
   var dayPrice = 0;
   var distancePrice = 0 ;
   var timePrice = 0;
 
+  //loop to get the price of each rentals
   for (var i = 0 ; i< rentals.length ; i++)
   {
     for (var j = 0 ; j < cars.length ; j++)
@@ -192,11 +193,10 @@ function getPrice(rentals, cars)
         dayPrice = cars[i].pricePerDay;
         distancePrice = cars[i].pricePerKm;
       }
-
     }
     var time = getDiffDays(rentals[i].pickupDate, rentals[i].returnDate );
     
-
+    //conditions to have a decreasing price
     if(time > 10)
     {
       dayPrice = 0.5 * dayPrice;
@@ -210,6 +210,7 @@ function getPrice(rentals, cars)
       dayPrice = 0.9 * dayPrice;
     }
 
+    //calculation to get the price for each rentals
     timePrice = time * dayPrice;
     rentals[i].price =  time * dayPrice + rentals[i].distance * distancePrice;
   } 
