@@ -258,8 +258,39 @@ function getPrice(rentals, cars, listActors)
     } 
   }
 }
-getPrice(rentals, cars, actors);
 
+//function that modify the rentals - exo 6
+function rentalModif(rentals, cars)
+{
+  for(var n = 0; n < rentalModifications.length; n++)
+  {
+    for(var o = 0; o < rentals.length; o++)
+    {
+      if(rentalModifications[n].rentalId == rentals[o].id)
+      {
+        if(rentalModifications[n].distance)
+        {
+          rentals[o].distance =  rentalModifications[n].distance; 
+        }               
+        if(rentalModifications[n].pickupDate)
+        {
+          rentals[o].pickupDate =  rentalModifications[n].pickupDate; 
+        }          
+        if(rentalModifications[n].returnDate)
+        {
+          rentals[o].returnDate =  rentalModifications[n].returnDate; 
+        }
+        if(rentalModifications[n].options)
+        {
+          rentals[o].options.deductibleReduction =  rentalModifications[n].options.deductibleReduction; 
+        }                 
+      }                  
+    }
+  }                      
+}
+
+rentalModif(rentals, cars)
+getPrice(rentals, cars, actors);
 
 console.log(cars);
 console.log(rentals);
