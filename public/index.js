@@ -172,16 +172,17 @@ function getDiffDays(date1, date2)
    var firstDate = new Date(date1);
    var secondDate = new Date(date2);
    
-   return  1 + (secondDate - firstDate) / 86400000;
+   return  1 + (secondDate - firstDate) / (1000 * 3600 * 24);
 }
 
 
 //function to get the price of the rental
-function getPrice(rentals, cars)
+function getPrice(rentals, cars, listActors)
 {
   var dayPrice = 0;
   var distancePrice = 0 ;
   var timePrice = 0;
+  var comm = 0;
 
   //loop to get the price of each rentals
   for (var i = 0 ; i< rentals.length ; i++)
@@ -194,29 +195,70 @@ function getPrice(rentals, cars)
         distancePrice = cars[i].pricePerKm;
       }
     }
-    var time = getDiffDays(rentals[i].pickupDate, rentals[i].returnDate );
+    var numDays = getDiffDays(rentals[i].pickupDate, rentals[i].returnDate );
     
-    //conditions to have a decreasing price
-    if(time > 10)
+    //conditions to have a decreasing price - exo2
+    if(numDays > 10)
     {
       dayPrice = 0.5 * dayPrice;
     }
-    else if(time > 4 && time <= 10)
+    else if((numDays> 4) && (numDays <= 10))
     {
       dayPrice = 0.7 * dayPrice;
     }
-    else if(time > 1 && time <= 4)
+    else if((numDays > 1) && (numDays <= 4))
     {
       dayPrice = 0.9 * dayPrice;
     }
 
-    //calculation to get the price for each rentals
-    timePrice = time * dayPrice;
-    rentals[i].price =  time * dayPrice + rentals[i].distance * distancePrice;
-  } 
-}
+    //calculation to get the price for each rentals - exo1
+    timePrice = numDays* dayPrice;
+    rentals[i].price =  numDays * dayPrice + rentals[i].distance * distancePrice;
 
-getPrice(rentals, cars);
+    //calculation of the commission - exo3
+    comm = 0.3 * rentals[i].price;
+    rentals[i].commission.insurance =  comm / 2 ; 
+    rentals[i].commission.assistance =  numDays;
+    rentals[i].commission.drivy =  comm - (rentals[i].commission.insurance + rentals[i].commission.assistance);
+  
+    //calculation of the price while deductible options is true - exo4
+    var deductible = 4 * numDays;
+    if(rentals[i].options.deductibleReduction == true)
+    {
+      rentals[i].price = rentals[i].price + deductible;
+    }
+
+    //calculation to pay the actors - exo5
+    for(var l = 0; l < listActors.length; l++)
+    {
+      if(listActors[l].rentalId == rentals[i].id)
+      {
+        for(var m = 0; m < listActors[l].payment.length; m++)
+        {
+          switch (listActors[l].payment[m].who)
+          {
+            case "driver":
+            listActors[l].payment[m].amount = listActors[l].payment[m].amount + rentals[i].price;
+            break;
+            case "owner":
+            listActors[l].payment[m].amount = rentals[i].price - comm;
+            break;
+            case "insurance":
+            listActors[l].payment[m].amount = rentals[i].commission.insurance;
+            break;
+            case "assistance":
+            listActors[l].payment[m].amount = rentals[i].commission.assistance;
+            break;
+            case "drivy":
+            listActors[l].payment[m].amount = rentals[i].commission.drivy + deductible;
+            break;
+          }
+        }
+      }
+    } 
+  }
+}
+getPrice(rentals, cars, actors);
 
 
 console.log(cars);
